@@ -41,16 +41,33 @@ test_var4 <- test.data$IV
 test_var5 <- test.data$V
 test_temp <- test.data$Temp
 
+#training
 qd.model <- lm(perc ~ var1 + var2 + var3 + var4 + var5 + temp)
 summary(qd.model)
 
 #validation
-validation_pred <- predict(qd.model, list(var1=valid_var1, var2=valid_var2, var3=valid_var3, var4=valid_var4, var5=valid_var5, temp=valid_temp))
+validation_pred <- predict(qd.model, list(var1=valid_var1, 
+                                          var2=valid_var2,
+                                          var3=valid_var3, 
+                                          var4=valid_var4, 
+                                          var5=valid_var5, 
+                                          temp=valid_temp))
 error <- MSE(valid_perc, validation_pred)
 
 #prediction on test set
-prediction <- predict(qd.model, list(var1=test_var1, var2=test_var2, var3=test_var3, var4=test_var4, var5=test_var5, temp=test_temp))
+prediction <- predict(qd.model, list(var1=test_var1, 
+                                     var2=test_var2, 
+                                     var3=test_var3, 
+                                     var4=test_var4, 
+                                     var5=test_var5, 
+                                     temp=test_temp))
 #plot(qd.model)
 
 #index of pure chemical in test data set
 pure_chemical_index <- which(prediction<1.8)
+
+#impurity type classification
+
+#combining regressiong and classification result
+
+#output to required csv format
