@@ -1,5 +1,3 @@
-setwd("C:/Users/Main/Documents/Work/SML/Term 2")
-
 load("ECG.Rdata")
 
 # while (dev.cur()>1) dev.off() # Delete all plots quickly
@@ -16,7 +14,7 @@ data <- matrix()                  # Flattened matrix of ECG intervals.
 
 for (j in 1:nrow(X.train)) {
   ### Rough way to remove drifting and standardize.
-  x <- X.train[2,]
+  x <- X.train[j,]
   ### Plots of the processing if you want to look, still needs work.
   # par(mfrow=c(2,1))
   # plot(x,type = 'l')
@@ -39,12 +37,6 @@ for (j in 1:nrow(X.train)) {
   thresh <- thresh_per*(max(x,na.rm=TRUE)) 
   q <- length(x)
   inds <- which(x >= c(x[1],x[1:q-1]) & x > c(x[2:q],x[q]) & x > thresh)   #Values of all the peaks in the ECG
-  while (k!=length(inds)) {
-    while (inds[k-1] +20 > inds[k]) {
-      inds <- inds[-(k-1)]
-    }
-    k <- k+1
-  }
   # points(inds,x[inds], col=2)
   
   
@@ -80,8 +72,11 @@ for (j in 1:nrow(X.train)) {
 #}
 
 ### Getting new labels, might have to double-check the indices.
-y.new <- rep(1,nrow(data))
-y.new[1:data_sep[1]] = y.train[1]
+y.new <- matrix(NA,nrow(data),2)
+y.new[1:data_sep[1],1] = y.train[1]
+y.new[1:data_sep[1],2] = 1
 for (i in 1:(length(data_sep)-1)) {
-  y.new[(data_sep[i]+1):data_sep[i+1]] = y.train[i+1]
+  y.new[(data_sep[i]+1):data_sep[i+1],1] = y.train[i+1]
+  y.new[(data_sep[i]+1):data_sep[i+1],2] = (i+1)
 }
+
