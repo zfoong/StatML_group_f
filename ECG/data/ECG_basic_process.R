@@ -29,7 +29,7 @@ remove_peaks = function(v) {
 
 for (j in 1:nrow(X.train)) {
   ### Rough way to remove drifting and standardize.
-  x <- X.train[2,]
+  x <- X.train[j,]
   ### Plots of the processing if you want to look, still needs work.
   # par(mfrow=c(2,1))
   # plot(x,type = 'l')
