@@ -103,6 +103,7 @@ g.hat[pure_chemical_index] <- "X"
 tot_error <- reg_error + cls_error
 
 #combining regressiong and classification result
+g.hat <- as.character(g.hat)
 result <- cbind(g.hat,y.hat)
 
 #output to required csv format
