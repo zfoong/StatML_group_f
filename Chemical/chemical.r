@@ -1,5 +1,6 @@
-library(rpart)
+library(MASS)
 library(randomForest)
+library(ridge)
 
 MSE <- function(truth, pred){
   n.truth <- length(truth)
@@ -7,9 +8,9 @@ MSE <- function(truth, pred){
 }
 
 ClassificationError <- function(truth, pred){
-  n.correct <- length(which(validationset.data.y == y_pred))
+  n.incorrect <- length(which(validationset.data.y != y_pred))
   n.truth <- length(truth)
-  return(n.correct/n.truth)
+  return(n.incorrect/n.truth)
 }
 
 #read data
@@ -17,8 +18,21 @@ setwd("C:\\Users\\Jane\\Desktop\\statml assignment\\StatML_group_f\\Chemical")
 training.data <- read.csv("data\\training_set.csv")
 test.data <- read.csv("data\\test_set.csv")
 
+#centering and scale training data set
+training.data.scaled <- as.data.frame(scale(training.data[-c(1,2)]))
+training.data <- cbind(training.data[c(1,2)], training.data.scaled)
+
+#centering and scale testing data set
+test.data <- as.data.frame(scale(test.data))
+
 #head(training.data)
-#plot(training.data)
+#plot(training.data$Impurity.Percent, training.data$I)
+
+
+#shuffle data
+set.seed(0)
+rows = sample(nrow(training.data))
+training.data = training.data[rows,]
 
 #cross-validation
 set.seed(0)
@@ -56,25 +70,46 @@ trainset.data.y <- trainset.data$Impurity.Type
 validationset.data.x  <- validationset.data[-2]
 validationset.data.y  <- validationset.data$Impurity.Type
 
-#training multiple linear regression
-qd.model <- lm(perc ~ var1 + var3 + var4 + var5 + temp)
-summary(qd.model)
+method <- "mlr"
+y.hat <- c()
+reg_error <- 0
 
-#regression validation
-validation_pred <- predict(qd.model, list(var1=valid_var1,
-                                          var3=valid_var3, 
-                                          var4=valid_var4, 
-                                          var5=valid_var5, 
-                                          temp=valid_temp))
-reg_error <- MSE(valid_perc, validation_pred)
-
-#regression prediction on test set
-y.hat <- predict(qd.model, list(var1=test_var1,
-                                var3=test_var3, 
-                                var4=test_var4, 
-                                var5=test_var5, 
-                                temp=test_temp))
-#plot(qd.model)
+if(method == "mlr"){
+  #training multiple linear regression
+  mlr.model <- lm(perc ~ var1 + var3 + var4 + var5)
+  summary(mlr.model)
+  
+  #regression validation
+  validation_pred <- predict(mlr.model, list(var1=valid_var1,
+                                             var3=valid_var3, 
+                                             var4=valid_var4, 
+                                             var5=valid_var5))
+  reg_error <- MSE(valid_perc, validation_pred)
+  
+  #regression prediction on test set
+  y.hat <- predict(mlr.model, list(var1=test_var1,
+                                   var3=test_var3, 
+                                   var4=test_var4, 
+                                   var5=test_var5))
+  #plot(mlr.model)
+}else{
+  #ridge regression
+  ridge.model <- linearRidge(perc ~ var1 + var2 + var3 + var4 + var5)
+  summary(ridge.model)
+  
+  validation_pred <- predict(ridge.model, list(var1=valid_var1,
+                                               var2=valid_var2,
+                                             var3=valid_var3, 
+                                             var4=valid_var4, 
+                                             var5=valid_var5))
+  reg_error <- MSE(valid_perc, validation_pred)
+  
+  y.hat <- predict(ridge.model, list(var1=test_var1,
+                                     var2=test_var2,
+                                   var3=test_var3, 
+                                   var4=test_var4, 
+                                   var5=test_var5))  
+}
 
 #index of pure chemical in test data set
 pure_chemical_index <- which(y.hat<1.8)
