@@ -14,7 +14,7 @@ ClassificationError <- function(truth, pred){
 }
 
 #read data
-setwd("C:\\Users\\Jane\\Desktop\\statml assignment\\StatML_group_f\\Chemical")
+setwd("C:\\Users\\zfoong\\Desktop\\statml assignment\\StatML_group_f\\Chemical")
 training.data <- read.csv("data\\training_set.csv")
 test.data <- read.csv("data\\test_set.csv")
 
