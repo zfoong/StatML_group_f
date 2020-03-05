@@ -28,12 +28,6 @@ test.data <- as.data.frame(scale(test.data))
 #head(training.data)
 #plot(training.data$Impurity.Percent, training.data$I)
 
-
-#shuffle data
-set.seed(0)
-rows = sample(nrow(training.data))
-training.data = training.data[rows,]
-
 #cross-validation
 set.seed(0)
 sample <- sample.int(n = nrow(training.data), size = floor(.80*nrow(training.data)), replace = F)
@@ -142,4 +136,4 @@ g.hat <- as.character(g.hat)
 result <- cbind(g.hat,y.hat)
 
 #output to required csv format
-write.csv(result, file = "chemical_predictions_group_F_week_1.csv", row.names=FALSE)
+write.csv(result, file = "chemical_predictions_group_F_week_2.csv", row.names=FALSE)
